@@ -1,0 +1,22 @@
+{
+  "name": "mernstasksserver",
+  "version": "1.0.0",
+  "description": "mern api para mern taks",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .",
+    "dev": "nodemon ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aitorulz1/rect-mern-servidor.git"
+  },
+  "author": "Aitor Arina",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.9.14",
+    "nodemon": "^2.0.4"
+  }
+}
