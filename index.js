@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 4000;
 
 // Importar rutas
 app.use('/api/usuarios', require('./routes/usuarios'));
+app.use('/api/auth', require('./routes/auth'));
 
 
 // Definir la página principal. Es solo para comprobar que funciona. Una vez que ves Hola Mundo puedes borrarlo.
