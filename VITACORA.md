@@ -118,4 +118,56 @@
 
 
 
+---------------------------------------------
+
+
+11) Creo el modelo Proyecto
+
+    Se compone de nombre (de proyecto), creador (el id del usuario) y creado (fecha)
+
+
+12) Routes -> Proyecto (tendrá rutas para crear, editar, eliminar) y su proyectoController
+
+    1) Creo el modelo
+    2) Creo el controlador -> requiere importar el modelo -> Crear proyecto
+    3) Creo la ruta -> requiere express, router y el controlador -> Indico la ruta en la q se posteará el nuevo poyecto
+    4) index.js -> Importo la nueva ruta de proyectos -> app.use('/api/proyectos', require('./routes/proyectos'))
+
+
+13) proyectoController
+
+        let proyecto = new Proyecto(req.body);
+
+        proyecto.save; 
+        res.json(proyecto)
+
+        Voy a POSTMAN, creo una nueva ruta con /api/proyectos y en el body inserto solo un nombre y envío. Me crea un proyecto con su nombre, su id y su fecha de creación.
+        Ahora tengo que asignarle el id del usuario que lo ha creado.
+
+
+14) Creo MIDDLEWARE folder y dentro auth para autenticar proyectos
+
+    0) Creo auth. -> Importo jsonwebtoken
+
+    1) Leer el token -> const token = req.header('x-auth-token')
+    2) Revisar si no hay
+    3) Validar el token
+    4) A proyecto agregarle el usuario.id
+
+Se valida y se asignaun proyecto se relaciona con el usuario que lo crea.
+
+
+15) Hago una validación para ver si si los campos en proyecto están vacíos por lo que voy a proyectos.js y después del auth, lo paso un check.
+
+Voy a proyectoController => 
+Si hay errores, validación los va a detectar y los colocará en el array.
+
+
+
+16) Vamos a traer los proyectos del usuario q está autenticado
+
+    1) En el proyectoController creo  obtenerProyectos que paso a proyectos.js, en la ruta del get.
+    2) En el Controller tengo el modelo de Proyecto importado
+    3) Creo en try un const proyectos que hace un find en el modelo Proyecto y le paso como condición el id del usuario.
+ 
 
