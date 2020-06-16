@@ -111,16 +111,16 @@ exports.eliminarProyecto = async( req, res ) => {
             return res.status(403).json({msg: 'No autorizado'})
         }
 
-        // Actualizar
-        proyecto = await Proyecto.findByIdAndUpdate({_id: req.params.id}, {$set : nuevoProyecto}, { new: true }),
-        
-        res.json({ proyecto })
+
+        // ELiminar el proyecto
+        await Proyecto.findOneAndRemove({ _id: req.params.id });
+        res.json({ msg: 'Proyecto eliminado'})
 
 
     } catch (error) {
         console.log(error)
-        res.status(500).send({msg: 'No se ha podido actualizar'})
+        res.status(500).send({msg: 'Error en el servidor'})
     }
-    
+
 
 }
