@@ -5,11 +5,11 @@ const TareaSchema = mongoose.Schema({
     nombre: {
         type: String,
         required: true,
-        trum: true
+        trim: true
     },
     estado: {
-        tyoe: Boolean,
-        defaul: false
+        type: Boolean,
+        default: false
     },
     creado: {
         type: Date,
