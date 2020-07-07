@@ -51,3 +51,17 @@ exports.autenticarUsuario = async(req, res) => {
     }
 
 }
+
+// Obtiene que usuario esta autenticado
+// Si el usuario esta autenticado entonces me trae todo el usuario por ese id y me lo trae en .json({usuario})
+
+exports.usuarioAutenticado = async (req, res) => {
+    try {
+        const usuario = await Usuario.findById(req.usuario.id).select('-password');
+        res.json({usuario})
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({msg: 'Hubo un error'});
+        
+    }
+}
