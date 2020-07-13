@@ -51,7 +51,8 @@ exports.crearTarea = async ( req, res, next ) => {
         try {
 
             // Extraemos el proyecto para saber de qué proyecto queremos las tareas
-            const { proyecto } = req.body;
+            const { proyecto } = req.query;
+
 
             // Si no existe...
             const existeProyecto = await Proyecto.findById(proyecto);
@@ -104,13 +105,18 @@ exports.crearTarea = async ( req, res, next ) => {
             // Crear nueva tarea
             const nuevaTarea = {};
 
-            if (nombre) {
-                nuevaTarea.nombre = nombre;
-            }
+            // if (nombre) {
+            //     nuevaTarea.nombre = nombre;
+            // }
 
-            if (estado) {
+            // if (estado) {
+            //     nuevaTarea.estado = estado;
+            // }
+
+            
+                nuevaTarea.nombre = nombre;
                 nuevaTarea.estado = estado;
-            }
+            
 
 
             // Guardar la tarea
@@ -133,7 +139,7 @@ exports.crearTarea = async ( req, res, next ) => {
         try {
 
             // Extraemos el proyecto, nombre y estado
-            const { proyecto } = req.body;
+            const { proyecto } = req.query;
 
             // Si no existe...
             let tarea = await Tarea.findById(req.params.id);

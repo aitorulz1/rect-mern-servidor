@@ -360,7 +360,8 @@ Ponemos las validaciones y cuando las pase...
 
     2) Puede ser que cuando carguemos este componente no tenga ningún usuario, por lo que crearemos un ternario qie si usuario existe, pinta este código y sino null.
 
-    3 ) Donde se encontraba el ombre... usuario.nombre. Por esto hemos traído usuario.
+    3 ) Donde se encontraba el nombre... usuario.nombre. Por esto hemos traído usuario.
+
 
 
 14) Crear cerrar sesión de usuario
@@ -369,3 +370,182 @@ Ponemos las validaciones y cuando las pase...
     2) authState -> Creamos la función cerrarSesion().
     3) Solo le pasamos un dispatch type: CERRAR_SESION
     4) en Barra.js extraemos cerrarSesions
+
+
+
+15 ) Proteger un componente. Si no hay credenciales no se puede acceder a ciertas bases
+
+    1) Components -> RutaPrivada.js
+    2) Importamos useContext, useEffect, Route Redirect, AuthContext
+    3) Creamos nuestro HIgher Order Component
+    4) En ella declaramos que una ruta privada tiene dentro otro componente -> component: Component, ...props
+    5) Creamos el aithContext y le pasamos el context para extraer autenticado (de momento)
+    6) Agregamos un Route y dentro de este una copa de los props y un render que ejecuta que si un usuario no esta autenticado, pasará algo y si lo está, pasará otra cosa.
+    7) Redirect lo usaremos para definir dónde enviar al usuario si no está autenticado.
+    8) App.js -> Importamos RutaPrivada
+    9) Cambio las rutas que consider con RutaPrivada 
+    10) Incorporamos usuarioAutenticado porque cuando te registras y refrescas, se pierde y pierdes la autenticación en RutaPrivada.
+    11) Extraemos en RutaPrivada usuarioCAutenticado ya que es el que tiene el token y la llamamos en un useEffect
+    12) Meto los datos de registro y cuando se carga, se ejecuta esa función y ya estoy autenticado
+
+    13) Al cargar hay un problema que se ve como si se cargara así que voy ak authState  y agregamos un nuevo elemtnto en initialState...
+        cargando: true
+
+    14) Añadimos en RutaPrivada una nueva condición en la que ya había de: si no esta cargando, entonces redirecciona a home. Así desaparece el flash que aparecía.
+
+
+
+------------- Creando Proyecto -------------
+
+    
+1) Creando el Proyecto
+
+    1.1) proyectoState -> Agregar nuevo Proyecto le inserto un try catch. Ya traía proyecto como payload así que añado async antes del try catch.
+    1.2) Traigo clienteAxios porque voy a interctuar con la BBDD
+    1.3) Console -> user messaes -> Aquí veo data y dentro me dice...
+        creado
+        creador
+        nombre
+        id
+    1.4) Meto dentro el dispatch y en vez de pasarle proyecto, le paso resultado.data
+    1.5) COmpruebo en Robot 3T que me crea el proyecto en a BBDD. 
+
+2) Listar los Proyectos | 276
+
+    2.1) proyectoState -> obtenerProyectos
+    2.2) Elimino el dispatch y lo inserto dentro del try en try catch
+    2.3) con const resultado, llamo a la BBDD y con get obtengo los proyectos, pero no sin antes cambiar en payload "proyecto" por "resultado.data.proyectos".
+
+    *Para comprobar qué debo de pasar o la estructura ("resultado.data.proyectos"), puedo ir al REDUCER y en OBTENER_PROYECTOS le hago console.log(action.payload) ->
+
+    case OBTENER_PROYECTOS:
+        console.log(action.payload);
+
+    Nos mostrará la ruta adecuada.
+
+    2.4) Si voy ahora a mi cuenta con mi correo, veo los proyectos que he creado.
+    2.5) Voy a ListadoProyectos.js y donde le paso a Proyecto el key de proyecto.id, le pongo un guión bajo -> proyecto._id
+
+    Mongo lo ve así. Antes no hacía falta pero ahora hay que cambiarlo para que no nos de un error.
+
+
+3) Obtener un Proyecto en activo 277
+
+    3.1) Proyecto.js
+    3.2) voy a onClick y en la ruta  
+    onClick= {() => seleccionarProyecto(proyecto.id)} 
+        lo cambio por  
+    onClick= {() => seleccionarProyecto(proyecto._id)}
+
+    3.3) Reducer -> Lo mismo... en case PROYECTO_ACTUAL, en el return, inserto el ._id
+
+
+4) Eliminar el Proyecto 278
+
+    4.1) ListadoTareas.js
+    4.2) Lo mismo que antes, voy al id que recoge onClick, que ene este caso se recoge en el boton pero pasa a una función que está haciendo scroll hacia arriba y cambio .id por ._id
+    4.3) También lo modifico en el Reducer.
+    4.4) ProyectoState -> en const eliminarProyecto hago lo mismo, async y try catch!
+
+    En este caso podemos pasar el await directamente en el try, sin const resultado...
+
+    try {
+            await clienteAxios.delete(`/api/proyectos/${proyectoId}`)
+            dispatch({
+                type: ELIMINAR_PROYECTO,
+                payload: proyectoId
+            })
+
+
+5 ) Mostrar alerta si hay errores | 279 -> Explica las alertas de errores
+
+    5.1) Agregamos nuevo type para PROYECTO_ERROR
+    5.2) Lo agregamos a proyectoState
+    5.3) Pasamos a eliminarProyecto el dispatch de PROYECTO_ERROR
+    5.4) En el initialState creamos mensaje: null y lo pasamos al provider
+    5.5) Creamos ene l catch la const alerta que contiene msg y categoria y lo pasamos como payload.
+    5.6) Vamos a reducer y a mensaje le pasamos el action.payload
+
+    5.7) ListadoProyectos.js -> importamos AlertaContext y extraemos alerta y mostrarAlerta
+    5.8) De proyectosContext extraemos mensaje
+    5.9) en el useEffect decimos que si hay mensaje, que mostrarAlerta(mensaje.msg, mensaje.categoria)
+    5.10) En el rretun creamos la alerta.
+    {alerta ? ... : ...
+    
+    5.11) Se lo paso al resto de funciones
+
+
+
+6) Insertando Tareas | 280
+
+    6.1) TareaState -> agregar Tareas -> try catch y le hago un post a clienteAxios con la ruta /api/tareas
+    6.2) TareaReducer _> cambio tareas por proyectoTareas. En el initial state he borrado tareas y proyectoTareas de null, pasa a se un [].
+    6.3) FormTareas -> if(tareaseleccionada...) cambio proyectoActul.id por proyectoActul._id
+    6.4) en el mismo sitio... tarea.proyectoId = proyectoActual._id -> tarea.proyecto xq en las rutas de tarea estamos enviando 'nombre' y 'proyecto' y en el modelo igual, lo paso como 'proyecto'.
+    El estado lo borro por que en el initialState está como false, por lo que cuando cambie, pasa a true.
+    6.5) Ya puedo agregart tareas
+
+
+
+
+7) Obteniendo las tareas del Proyecto | 281
+
+    7.1) tareaState -> Obtener tareas (Consultar a la BBDD con try catch.)
+    7.2) Cada tarea tenemos que pasarle el proyecto en el que esta.
+    7.3) Si debajo de obtenerTareas hago un console.log(proyectoId) vemos que al seleccionar un proyecto sale el proyecto id.
+    7.4) Lo renombranmos a 'proyecto'. En Proyecto.js en const seleccionarProyecto ya le estamos pasando el id.
+    7.5) Tengo que pasar el proyecto al axios para obtener las tareas.
+    7.6) en const resultado paso proyecto como un params. Si hago console.log en tareasController, lo leo como req.query. en tareasController, en obtenerTareas, en el controller, si hago un console.log(req.params) y selecciono un proyecto, en la terminal me indica su id.
+    7.7) Si seleccionoun proyecto, en console, veo el array de tareas, pero aún no las muestra.
+    7.8) tareasReducer -> TAREAS_PROYECTO. Quito el filter y pongo action.payload ya que no hace falta hacer un filtro ya que axios ya me está trayendo esas tareas.
+
+
+
+8) Eliminar Tareas
+
+    8.1) components -> tareas -> Tarea.js. Tengo que ir a la función que recoge el id de la tarea y poner el guión bajo...
+    onClick= { () => tareaEliminar(tarea._id) }
+
+    en tareaEliminar, eliminarTarea(id) recoge el valor adecuado así que no debemos de cambiar el id. Lo digo por si decía tareaId.
+
+    8.2) tareaState -> eliminarTarea -> try catch. Solo usamos await porque vamos a eliminar.
+    8.3) Para eliminar una tarea, vemos en el controller que debemos de pasarle el proyecto tareasController -> eliminarTarea -> const { proyecto } = req.body. Por lo que en Tareas.js, a eliminarTarea, además del id le tenemos que pasar el proyecto actual...
+
+    eliminarTarea(id, proyectoActual._id)
+
+    Tenemos que pasar el id al backend para mostrar q somos los creadores de ese proyecto.
+
+    8.4) areaState -> en async le pasamos entonces async(id, proyecto) y en el await le pasamos de nuevo params: { protyecto }
+
+    8.5) Volvemos al controller de tareas y cambiamos req.body por req.query ya que le pasamos params en el State
+
+    8.6) tareaReducer: a ELIMINAR_PROYECTO tenemos que agregarle a tarea.id -> tarea._id
+
+
+
+
+9) Editar Tarea
+
+    Para editar tarea tenemos 2 métoo que son...
+
+    - cambiarEstado (para cambiar de completo a incompleto)
+    - actualizarTarea
+
+    Los dos hacen lo mismo. Es un put a terea y lo que vamos a hacer es eliminar cambiarEstado, el cual lo estoy usando en Tarea.js por loq ue tendré que eliminar del destructutrin y de luna función y cambiarlo por actualizarTarea.
+
+    Ambos toman tarea
+
+    9.1) Hacemos console.log(tarea) y seleccionamos una tarea y nos da toda la información
+    9.2) tareaState -> actualizarTarea -> try catch
+
+    const resultado = await clienteAxios.put(`/api/tareas/${tarea._id}`, tarea)
+
+    Le paso tarea para que la reescriba.
+
+    9.3) console.log(resultado) y vemos toda la información de la tarea. data. tarea. Por esto el payload es resultado.data.tarea
+
+    9.4) tareaReducer -> ACTUALIZAR_TAREA y tarea.id -> tarea._id; action.payload.id -> action.payload._id
+
+    9.5) Si cambio el estado se cambia a completo, pero si vuelves a clickar no cambia a incompleto.
+
+    9.6) tareaController .> const nuevaTarea debo de quitarle los if.
